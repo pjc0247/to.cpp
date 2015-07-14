@@ -20,7 +20,8 @@ to::_types
 to::_string
 ----
 
-  __Fundamental types__
+  __Fundamental types__<br>
+  C++ 기본 타입들에는 내장 변환기가 사용됩니다.
   ```c++
   int v = 1234;
   std::cout<< to::_string(v); // 1234
@@ -39,7 +40,8 @@ to::_string
   char *s = "hello world";
   std::cout<< to::_string(s); // hello world
   ```
-  __STL Containers__
+  __STL Containers__<br>
+  STL 컨테이너들에는 내장 변환기가 사용됩니다.
   ```c++
   std::vector<int> v({1,2,3,4});
   std::cout<< to::_string(v); // [1, 2, 3, 4]
