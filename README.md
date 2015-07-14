@@ -32,6 +32,8 @@ to::_string
   int *ptr = &v;
   std::cout<< to::_string(v); // #<int * 00001234>
   
+  std::cout<< to::_string(nullptr); // #<std::nullptr_t 00000000>
+  
   // char *, const char *, char [], const char[] 타입은 포인터로 취급되지 않고 문자열로 취급됩니다.
   char *s = "hello world";
   std::cout<< to::_string(s); // hello world
@@ -57,13 +59,14 @@ to::_string
   std::cout<< to::_string({1,2,3,4}); // [1, 2, 3, 4]
   std::cout<< to::_string({{1,2}, {3,4}}); // not implemented yet
   ```
-  __Custom Classes__
+  __Custom Classes__<br>
+  to_string 메소드를 구현하여 클래스에 대한 커스텀 문자열 변환기를 만들 수 있습니다.
   ```c++
   class Foo{
   public:
     int v;
     
-    std::string to_string(){
+    std::string to_string() const{
       return "#<Foo v:" + to::_string(v) + ">";
     }
   }
@@ -73,6 +76,7 @@ to::_string
   
   std::cout<< to::_string(f); // #<Foo v:15>
   ```
+  사용 가능한 변환이 없을 경우에는 타입 이름과 주소값이 함께 출력됩니다.
   ```c++
   Bar b;
   std::cout<< to::_string(b); // #<Bar 00001234>
