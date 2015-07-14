@@ -66,7 +66,7 @@ to::_string
   std::cout<< to::_string(l); // [[1, 2], [3, 4]]
   ```
   __Custom Classes__<br>
-  to_string 메소드를 구현하여 클래스에 대한 커스텀 문자열 변환기를 만들 수 있습니다.
+  직접 만든 클래스에 to_string 메소드를 구현하여 클래스에 대한 커스텀 문자열 변환기를 만들 수 있습니다.
   ```c++
   class Foo{
   public:
