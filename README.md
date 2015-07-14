@@ -3,6 +3,8 @@ to.cpp
 
 ![logo](to.png)<br>
 
+c++용 타입간 형변환 기능 제공
+
 to::_types
 ----
   ```c++
