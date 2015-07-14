@@ -29,8 +29,9 @@ to::_string
   bool b = true;
   std::cout<< to::_string(b); // true
   
+  // 포인터는 타입 이름 + 주소값으로 변환됩니다.
   int *ptr = &v;
-  std::cout<< to::_string(v); // #<int * 00001234>
+  std::cout<< to::_string(v); // #<int * 0000abcd>
   
   std::cout<< to::_string(nullptr); // #<std::nullptr_t 00000000>
   
@@ -58,6 +59,9 @@ to::_string
   
   std::cout<< to::_string({1,2,3,4}); // [1, 2, 3, 4]
   std::cout<< to::_string({{1,2}, {3,4}}); // not implemented yet
+  
+  std::initializer_list<std::initializer_list<int>> l({{1,2}, {3,4}});
+  std::cout<< to::_string(l); // [[1, 2], [3, 4]]
   ```
   __Custom Classes__<br>
   to_string 메소드를 구현하여 클래스에 대한 커스텀 문자열 변환기를 만들 수 있습니다.
