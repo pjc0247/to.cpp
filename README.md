@@ -22,11 +22,15 @@ to::_string
   std::cout<< to::_string(v); // 1234
   std::cout<< to::_string(4.44f); // 4.44
   
+  bool b = true;
+  std::cout<< to::_string(b); // true
+  
   int *ptr = &v;
   std::cout<< to::_string(v); // #<int * 00001234>
   
-  bool b = true;
-  std::cout<< to::_string(b); // true
+  // char *, const char * 타입은 포인터로 취급되지 않고 문자열로 취급됩니다.
+  char *s = "hello world";
+  std::cout<< to::_string(s); // hello world
   ```
   __STL Containers__
   ```c++
@@ -76,3 +80,9 @@ to::_string
   std::cout<< to::is_string_convertible<Foo>::value; // true
   std::cout<< to::is_string_convertible<Bar>::value; // false
   ```
+
+Options
+----
+* __TO_STRING_WITH_QMARKS__
+  std::string, char *, const char *형에 대해 to::_string을 수행할 때 문자열의 앞뒤로 __"__를 삽입합니다.<br>
+  이 옵션을 활용하면 STL 컨테이너에서 json 스트링을 빌드할 수 있습니다.
