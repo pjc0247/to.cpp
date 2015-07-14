@@ -293,7 +293,7 @@ namespace to {
   typename std::enable_if<
     (!has_to_string<T>::value) &&
     (!embed_convertible<T>::value) &&
-    (!std::is_pointer<T>::value && !std::is_array<T>::value && !std::is_same<std::nullptr_t, T>::value),
+    (!std::is_pointer<T>::value && !std::is_same<std::nullptr_t, T>::value),
     std::string>::type
   _string(const T &o) noexcept {
     char tmp[512];
@@ -306,7 +306,7 @@ namespace to {
   typename std::enable_if<
     (!has_to_string<T>::value) &&
     (!embed_convertible<T>::value) &&
-    (std::is_pointer<T>::value || std::is_array<T>::value || std::is_same<std::nullptr_t, T>::value) &&
+    (std::is_pointer<T>::value || std::is_same<std::nullptr_t, T>::value) &&
     (!std::is_same<T, char*>::value),
     std::string>::type
   _string(T o) noexcept {
