@@ -84,5 +84,5 @@ to::_string
 Options
 ----
 * __TO_STRING_WITH_QMARKS__
-  std::string, char *, const char *형에 대해 to::_string을 수행할 때 문자열의 앞뒤로 __"__를 삽입합니다.<br>
+  std::string, char *, const char *형에 대해 to::_string을 수행할 때 문자열의 앞뒤로 __\"__를 삽입합니다.<br>
   이 옵션을 활용하면 STL 컨테이너에서 json 스트링을 빌드할 수 있습니다.
