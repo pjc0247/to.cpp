@@ -8,10 +8,10 @@ to::_types
   std::cout<< to::_unsigned_int("9999999999999999999999999999"); // out_of_range exception
   ```
   
-  * Supported Types
-    * int
-    * 
-  
+  * __Supported Types__
+    * signed/unsigned int
+    * signed/unsigned long
+    * 나중에 추가
   
 to::_string
 ----
