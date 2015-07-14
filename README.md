@@ -87,11 +87,15 @@ to::_string
   Bar b;
   std::cout<< to::_string(b); // #<Bar 00001234>
   ```
-  __is_string_convertible__
+  __is_string_convertible__<br>
+  사용 가능한 문자열 변환기가 있는지 검사합니다.
   ```c++
+  /* int형은 내장 변환기가 있으므로 true */
   std::cout<< to::is_string_convertible<int>::value; // true
   
+  /* Foo 클래스는 to_string 메소드를 구현해 커스텀 변환기를 만들었으므로 true */
   std::cout<< to::is_string_convertible<Foo>::value; // true
+  /* Bar 클래스는 구현하지 않았으므로 false */
   std::cout<< to::is_string_convertible<Bar>::value; // false
   ```
 
