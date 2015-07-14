@@ -32,7 +32,7 @@ to::_string
   int *ptr = &v;
   std::cout<< to::_string(v); // #<int * 00001234>
   
-  // char *, const char * 타입은 포인터로 취급되지 않고 문자열로 취급됩니다.
+  // char *, const char *, char [], const char[] 타입은 포인터로 취급되지 않고 문자열로 취급됩니다.
   char *s = "hello world";
   std::cout<< to::_string(s); // hello world
   ```
