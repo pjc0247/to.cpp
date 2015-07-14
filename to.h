@@ -13,8 +13,6 @@
 #include <unordered_map>
 #include <sstream>
 
-#define TO_STL_STR_WITH_QUATO
-
 #if __cplusplus > 199711L || _MSC_VER >= 11900
 #define HAS_NOEXCEPT
 #else
@@ -123,7 +121,11 @@ namespace to{
 		template <>
 		struct cvt<std::string>{
 			static std::string to_string(const std::string &str){
+#if defined(TO_STRING_WITH_QMARKS)
+				return '"' + str + '"';
+#else
 				return str;
+#endif
 			}
 		};
 
@@ -175,7 +177,7 @@ namespace to{
 		typedef char yes;
 		typedef long no;
 
-		template <typename C> static yes test( decltype(&embed_cvts::cvt<C>::to_string) ) ;
+		template <typename C> static yes test( decltype(embed_cvts::cvt<C>::to_string) ) ;
 		template <typename C> static no test(...);
 
 	public:
@@ -197,13 +199,13 @@ namespace to{
 		typedef char yes;
 		typedef long no;
 
-		template <typename C> static yes test( decltype(&C::to_string) ) ;
+		template <typename C> static yes test( decltype(C::to_string) ) ;
 		template <typename C> static no test(...);
 
 	public:
 	   /* to_string 메소드가 있는지 검사한다 ->
 		* to_string 메소드 리턴형이 std::string인지 검사한다. */
-		enum{value = get_to_string_ret_type<Hello, sizeof(test<T>(0)) == sizeof(yes) >::value};
+		enum{value = get_to_string_ret_type<T, sizeof(test<T>(0)) == sizeof(yes) >::value};
 	};
 
 
