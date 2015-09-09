@@ -89,7 +89,8 @@ to::_string
   std::cout<< to::_string(b); // #<Bar 00001234>
   ```
   __is_string_convertible__<br>
-  사용 가능한 문자열 변환기가 있는지 검사합니다.
+  사용 가능한 문자열 변환기가 있는지 검사합니다.<br>
+  has_string_converter로 이름 바꾸고 싶다..
   ```c++
   /* int형은 내장 변환기가 있으므로 true */
   std::cout<< to::is_string_convertible<int>::value; // true
