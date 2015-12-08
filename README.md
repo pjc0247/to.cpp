@@ -89,7 +89,7 @@ to::_string
   std::cout<< to::_string(b); // #<Bar 00001234>
   ```
   __is_string_convertible__<br>
-  사용 가능한 문자열 변환기가 있는지 검사합니다.<br>
+  사용 가능한 문자열 변환기가 있는지 검사합니다. (어차피 변환기 없어도 to::_string은 동작합니다.) <br> 
   has_string_converter로 이름 바꾸고 싶다..
   ```c++
   /* int형은 내장 변환기가 있으므로 true */
@@ -104,7 +104,7 @@ to::_string
 Options
 ----
 * __TO_STRING_WITH_QMARKS__<br>
-  std::string, char *, const char *형에 대해 to::_string을 수행할 때 문자열의 앞뒤로 __\"__를 삽입합니다.<br>
+  std::string, char *, const char *형에 대해 to::_string을 수행할 때 문자열의 앞뒤로 `"`를 삽입합니다.<br>
   이 옵션을 활용하면 STL 컨테이너에서 json 스트링을 빌드할 수 있습니다.
 
   ```cpp
