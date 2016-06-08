@@ -161,3 +161,8 @@ Options
   	{"colors", {"yellow", "red", "blue"}}});
   std::cout<< to::_string(m2); // {"fruits" : ["apple", "banana", "orange"], "colors" : ["yellow", "red", "blue"]}
   ```
+
+TODO
+----
+* 스마트 포인터 지원
+* ToString 생성기에 상속 지원
