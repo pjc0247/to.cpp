@@ -39,17 +39,17 @@
 namespace to {
     template <size_t N>
     struct value_builder {
-        template <class... TupleArgs, class... Args>
-        static std::vector<std::string> build(const std::tuple<TupleArgs...>& targ, Args&&... args) {
-            auto vec = value_builder<N - 1>::build(targ, std::get<N - 1>(targ), std::forward<Args>(args)...);
+        template <class... TARGS, class... ARGS>
+        static std::vector<std::string> build(const std::tuple<TARGS...>& targ, ARGS&&... args) {
+            auto vec = value_builder<N - 1>::build(targ, std::get<N - 1>(targ), std::forward<ARGS>(args)...);
             vec.push_back(to::_string(std::get<N - 1>(targ)).c_str());
             return vec;
         }
     };
     template <>
     struct value_builder<0> {
-        template <class... TupleArgs, class... Args>
-        static std::vector<std::string> build(const std::tuple<TupleArgs...>& targ, Args&&... args) {
+        template <class... TARGS, class... ARGS>
+        static std::vector<std::string> build(const std::tuple<TARGS...>& targ, ARGS&&... args) {
             return std::vector<std::string>();
         }
     };
