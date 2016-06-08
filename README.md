@@ -120,9 +120,14 @@ a.inventory.push_back(item1);
 a.inventory.push_back(item2);
 printf("%s\n", a.to_string().c_str());
   ```
-  출력 결과물
+  출력 결과물 (가독성을 위해 수동으로 줄바꿈 하였습니다, 실제 결과는 줄바꿈이 없습니다.)
   ```
-#<class player  inventory : [#<class item  qty : 5, name : SWORD>, #<class item  qty : 5, name : CHICKEN>],  weapon : #<class weapon  level : 1, damage : 123>, hp : 100>
+#<class player
+  inventory : [
+    #<class item  qty : 5, name : SWORD>,
+    #<class item  qty : 5, name : CHICKEN>], 
+  weapon : #<class weapon  level : 1, damage : 123>,
+  hp : 100>
   ```
   <br>
   사용 가능한 변환이 없을 경우에는 타입 이름과 주소값이 함께 출력됩니다.
