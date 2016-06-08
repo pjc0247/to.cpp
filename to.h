@@ -21,111 +21,111 @@
 #endif
 
 #define CREATE_TO_STRING(...) \
-	std::string to_string() const { \
-		auto raw_values = std::make_tuple(__VA_ARGS__); \
-		constexpr size_t tuple_size = std::tuple_size<decltype(raw_values)>::value; \
-		auto values = to::value_builder<tuple_size>::build(raw_values); \
-		std::string r = "#<" + std::string(typeid(*this).name()) + " "; \
-		for (int i = 0;i < tuple_size; i++){ \
-			auto key = to::nth_token(i, #__VA_ARGS__); \
-			if(key == "") break; \
-			r += key + " : " + to::_string(values[tuple_size - i - 1]) + ", "; \
-		}\
-		r.pop_back(); r.pop_back(); \
-		return r + ">"; \
-	}
+    std::string to_string() const { \
+        auto raw_values = std::make_tuple(__VA_ARGS__); \
+        constexpr size_t tuple_size = std::tuple_size<decltype(raw_values)>::value; \
+        auto values = to::value_builder<tuple_size>::build(raw_values); \
+        std::string r = "#<" + std::string(typeid(*this).name()) + " "; \
+        for (int i = 0;i < tuple_size; i++){ \
+            auto key = to::nth_token(i, #__VA_ARGS__); \
+            if(key == "") break; \
+            r += key + " : " + to::_string(values[tuple_size - i - 1]) + ", "; \
+        }\
+        r.pop_back(); r.pop_back(); \
+        return r + ">"; \
+    }
  
 // TO::INTERNAL
 namespace to {
-	template <size_t N>
-	struct value_builder {
-		template <class... TupleArgs, class... Args>
-		static std::vector<std::string> build(const std::tuple<TupleArgs...>& targ, Args&&... args) {
-			auto vec = value_builder<N - 1>::build(targ, std::get<N - 1>(targ), std::forward<Args>(args)...);
-			vec.push_back(to::_string(std::get<N - 1>(targ)).c_str());
-			return vec;
-		}
-	};
-	template <>
-	struct value_builder<0> {
-		template <class... TupleArgs, class... Args>
-		static std::vector<std::string> build(const std::tuple<TupleArgs...>& targ, Args&&... args) {
-			return std::vector<std::string>();
-		}
-	};
+    template <size_t N>
+    struct value_builder {
+        template <class... TupleArgs, class... Args>
+        static std::vector<std::string> build(const std::tuple<TupleArgs...>& targ, Args&&... args) {
+            auto vec = value_builder<N - 1>::build(targ, std::get<N - 1>(targ), std::forward<Args>(args)...);
+            vec.push_back(to::_string(std::get<N - 1>(targ)).c_str());
+            return vec;
+        }
+    };
+    template <>
+    struct value_builder<0> {
+        template <class... TupleArgs, class... Args>
+        static std::vector<std::string> build(const std::tuple<TupleArgs...>& targ, Args&&... args) {
+            return std::vector<std::string>();
+        }
+    };
 
-	constexpr unsigned short _make_16(unsigned char a, unsigned char b) {
-		return ((unsigned short)((a & 0xff) | ((b & 0xff) << 8)));
-	}
-	constexpr unsigned char _lo_8(unsigned short a) {
-		return ((unsigned char)(a & 0xff));
-	}
-	constexpr unsigned char _hi_8(unsigned short a) {
-		return ((unsigned char)(a >> 8) & 0xff);
-	}
+    constexpr unsigned short _make_16(unsigned char a, unsigned char b) {
+        return ((unsigned short)((a & 0xff) | ((b & 0xff) << 8)));
+    }
+    constexpr unsigned char _lo_8(unsigned short a) {
+        return ((unsigned char)(a & 0xff));
+    }
+    constexpr unsigned char _hi_8(unsigned short a) {
+        return ((unsigned char)(a >> 8) & 0xff);
+    }
 
-	template <size_t N, size_t I, size_t OFFSET>
-	struct tokenizer {
-		constexpr static int find(int target, const char a[]) {
-			return
-				a[I] == ',' ?
-					target == 0 ?
-						_make_16(I + 1, OFFSET - I) :
-						tokenizer<N, I - 1, I - 1>::find(target - 1, a)
-					:
-					tokenizer<N, I - 1, OFFSET>::find(target, a);
-		}
-	};
-	template <size_t N, size_t OFFSET>
-	struct tokenizer<N, 0, OFFSET> {
-		constexpr static int find(int target, const char a[]) {
-			return _make_16(0, OFFSET + 1);
-		}
-	};
-	template <size_t SIZE>
-	inline std::string nth_token(int target, const char(&a)[SIZE]) {
-		int ret = tokenizer<0, SIZE - 2, SIZE - 2>::find(target, a);
-		return std::string(a + _lo_8(ret), _hi_8(ret));
-	}
+    template <size_t N, size_t I, size_t OFFSET>
+    struct tokenizer {
+        constexpr static int find(int target, const char a[]) {
+            return
+                a[I] == ',' ?
+                    target == 0 ?
+                        _make_16(I + 1, OFFSET - I) :
+                        tokenizer<N, I - 1, I - 1>::find(target - 1, a)
+                    :
+                    tokenizer<N, I - 1, OFFSET>::find(target, a);
+        }
+    };
+    template <size_t N, size_t OFFSET>
+    struct tokenizer<N, 0, OFFSET> {
+        constexpr static int find(int target, const char a[]) {
+            return _make_16(0, OFFSET + 1);
+        }
+    };
+    template <size_t SIZE>
+    inline std::string nth_token(int target, const char(&a)[SIZE]) {
+        int ret = tokenizer<0, SIZE - 2, SIZE - 2>::find(target, a);
+        return std::string(a + _lo_8(ret), _hi_8(ret));
+    }
 }
 
 // TO::_TYPES
 namespace to {
-	int _int(const std::string &v) throw(std::out_of_range, std::invalid_argument) {
-		return stoi(v);
-	}
-	unsigned int _unsigned_int(const std::string &v) throw(std::out_of_range, std::invalid_argument) {
-		auto lresult = std::stoul(v);
-		unsigned int iresult = lresult;
-		if (lresult != iresult) throw std::out_of_range("out of range");
-		return iresult;
-	}
-	long _long(const std::string &v) throw(std::out_of_range, std::invalid_argument) {
-		return std::stoi(v);
-	}
-	unsigned long _unsigned_long(const std::string &v) throw(std::out_of_range, std::invalid_argument) {
-		return std::stoul(v);
-	}
+    int _int(const std::string &v) throw(std::out_of_range, std::invalid_argument) {
+        return stoi(v);
+    }
+    unsigned int _unsigned_int(const std::string &v) throw(std::out_of_range, std::invalid_argument) {
+        auto lresult = std::stoul(v);
+        unsigned int iresult = lresult;
+        if (lresult != iresult) throw std::out_of_range("out of range");
+        return iresult;
+    }
+    long _long(const std::string &v) throw(std::out_of_range, std::invalid_argument) {
+        return std::stoi(v);
+    }
+    unsigned long _unsigned_long(const std::string &v) throw(std::out_of_range, std::invalid_argument) {
+        return std::stoul(v);
+    }
 };
 
 // TO::_STRING
 namespace to {
-	template<typename T>
-	struct is_initializer_list {
-		enum { value = false };
-	};
-	template<typename T>
-	struct is_initializer_list<std::initializer_list<T>> {
-		enum { value = true };
-	};
+    template<typename T>
+    struct is_initializer_list {
+        enum { value = false };
+    };
+    template<typename T>
+    struct is_initializer_list<std::initializer_list<T>> {
+        enum { value = true };
+    };
 
-	class embed_cvts {
-	public:
+    class embed_cvts {
+    public:
 
-		template <typename T>//, typename C = char>//, template <typename T, typename = std::allocator<T>> class C>
-		struct cvt {
-			/* nothing -> deduction failure */
-		};
+        template <typename T>//, typename C = char>//, template <typename T, typename = std::allocator<T>> class C>
+        struct cvt {
+            /* nothing -> deduction failure */
+        };
 
 #define SINGLE_ELEM_ITERATABLE_CVT(type) \
     template <typename T> \
@@ -157,26 +157,26 @@ namespace to {
       } \
     };
 
-		SINGLE_ELEM_ITERATABLE_CVT(std::initializer_list)
-		SINGLE_ELEM_ITERATABLE_CVT(std::vector)
-		SINGLE_ELEM_ITERATABLE_CVT(std::deque)
-		SINGLE_ELEM_ITERATABLE_CVT(std::stack)
-		SINGLE_ELEM_ITERATABLE_CVT(std::list)
-		SINGLE_ELEM_ITERATABLE_CVT(std::forward_list)
+        SINGLE_ELEM_ITERATABLE_CVT(std::initializer_list)
+        SINGLE_ELEM_ITERATABLE_CVT(std::vector)
+        SINGLE_ELEM_ITERATABLE_CVT(std::deque)
+        SINGLE_ELEM_ITERATABLE_CVT(std::stack)
+        SINGLE_ELEM_ITERATABLE_CVT(std::list)
+        SINGLE_ELEM_ITERATABLE_CVT(std::forward_list)
 
-		PAIR_ITERATABLE_CVT(std::map)
-		PAIR_ITERATABLE_CVT(std::unordered_map)
+        PAIR_ITERATABLE_CVT(std::map)
+        PAIR_ITERATABLE_CVT(std::unordered_map)
 
-		template <>
-		struct cvt<std::string> {
-			static std::string to_string(const std::string &str) {
+        template <>
+        struct cvt<std::string> {
+            static std::string to_string(const std::string &str) {
 #if defined(TO_STRING_WITH_QMARKS)
-				return '"' + str + '"';
+                return '"' + str + '"';
 #else
-				return str;
+                return str;
 #endif
-			}
-		};
+            }
+        };
 
 #define _FUNDAMENTAL_CVT(type) \
     template <> \
@@ -188,186 +188,186 @@ namespace to {
       } \
     };
 
-		_FUNDAMENTAL_CVT(char)
-		_FUNDAMENTAL_CVT(unsigned char)
-		_FUNDAMENTAL_CVT(short)
-		_FUNDAMENTAL_CVT(unsigned short)
-		_FUNDAMENTAL_CVT(int)
-		_FUNDAMENTAL_CVT(unsigned int)
-		_FUNDAMENTAL_CVT(long)
-		_FUNDAMENTAL_CVT(unsigned long)
-		_FUNDAMENTAL_CVT(long long)
-		_FUNDAMENTAL_CVT(unsigned long long)
-		_FUNDAMENTAL_CVT(float)
-		_FUNDAMENTAL_CVT(double)
+        _FUNDAMENTAL_CVT(char)
+        _FUNDAMENTAL_CVT(unsigned char)
+        _FUNDAMENTAL_CVT(short)
+        _FUNDAMENTAL_CVT(unsigned short)
+        _FUNDAMENTAL_CVT(int)
+        _FUNDAMENTAL_CVT(unsigned int)
+        _FUNDAMENTAL_CVT(long)
+        _FUNDAMENTAL_CVT(unsigned long)
+        _FUNDAMENTAL_CVT(long long)
+        _FUNDAMENTAL_CVT(unsigned long long)
+        _FUNDAMENTAL_CVT(float)
+        _FUNDAMENTAL_CVT(double)
 
-		/* 배열형 */
-		/*   TODO : stl iteratable이랑 합치기 */
-		template <typename T, size_t LEN>
-		struct cvt<T[LEN]> {
-			static std::string to_string(T(&n)[LEN]) {
-				std::string result;
-				for (auto &v : n) {
-					if (!result.empty())
-						result.append(", ");
-					result.append(to::_string(v));
-				}
-				return "[" + result + "]";
-			}
-		};
+        /* 배열형 */
+        /*   TODO : stl iteratable이랑 합치기 */
+        template <typename T, size_t LEN>
+        struct cvt<T[LEN]> {
+            static std::string to_string(T(&n)[LEN]) {
+                std::string result;
+                for (auto &v : n) {
+                    if (!result.empty())
+                        result.append(", ");
+                    result.append(to::_string(v));
+                }
+                return "[" + result + "]";
+            }
+        };
 
-		template <>
-		struct cvt<bool> {
-			static std::string to_string(bool n) {
-				return n ? "true" : "false";
-			}
-		};
+        template <>
+        struct cvt<bool> {
+            static std::string to_string(bool n) {
+                return n ? "true" : "false";
+            }
+        };
 
-		template <size_t LEN>
-		struct cvt<char[LEN]> {
-			static std::string to_string(char(&n)[LEN]) {
-				return std::string(n);
-			}
-		};
-		template <size_t LEN>
-		struct cvt<const char[LEN]> {
-			static std::string to_string(const char(&n)[LEN]) {
-				return std::string(n);
-			}
-		};
-		template <>
-		struct cvt<char*> {
-			static std::string to_string(char *n) {
-				return std::string(n);
-			}
-		};
-		template <>
-		struct cvt<const char*> {
-			static std::string to_string(const char *n) {
-				return std::string(n);
-			}
-		};
-	};
+        template <size_t LEN>
+        struct cvt<char[LEN]> {
+            static std::string to_string(char(&n)[LEN]) {
+                return std::string(n);
+            }
+        };
+        template <size_t LEN>
+        struct cvt<const char[LEN]> {
+            static std::string to_string(const char(&n)[LEN]) {
+                return std::string(n);
+            }
+        };
+        template <>
+        struct cvt<char*> {
+            static std::string to_string(char *n) {
+                return std::string(n);
+            }
+        };
+        template <>
+        struct cvt<const char*> {
+            static std::string to_string(const char *n) {
+                return std::string(n);
+            }
+        };
+    };
 
-	template <typename T>
-	struct embed_convertible {
-		typedef char yes;
-		typedef long no;
+    template <typename T>
+    struct embed_convertible {
+        typedef char yes;
+        typedef long no;
 
-		template <typename C> static yes test(decltype(&embed_cvts::cvt<C>::to_string));
-		template <typename C> static no test(...);
+        template <typename C> static yes test(decltype(&embed_cvts::cvt<C>::to_string));
+        template <typename C> static no test(...);
 
-	public:
-		enum { value = sizeof(test<T>(0)) == sizeof(yes) };
-	};
+    public:
+        enum { value = sizeof(test<T>(0)) == sizeof(yes) };
+    };
 
-	template <typename T>
-	struct has_to_string {
-	private:
-		template <typename T, bool A>
-		struct get_to_string_ret_type {
-			enum { value = false };
-		};
-		template <typename T>
-		struct get_to_string_ret_type<T, true> {
-			enum { value = std::is_same<std::string, decltype(((T*)nullptr)->to_string()) >::value };
-		};
+    template <typename T>
+    struct has_to_string {
+    private:
+        template <typename T, bool A>
+        struct get_to_string_ret_type {
+            enum { value = false };
+        };
+        template <typename T>
+        struct get_to_string_ret_type<T, true> {
+            enum { value = std::is_same<std::string, decltype(((T*)nullptr)->to_string()) >::value };
+        };
 
-		typedef char yes;
-		typedef long no;
+        typedef char yes;
+        typedef long no;
 
-		template <typename C> static yes test(decltype(&C::to_string));
-		template <typename C> static no test(...);
+        template <typename C> static yes test(decltype(&C::to_string));
+        template <typename C> static no test(...);
 
-	public:
-		/* to_string 메소드가 있는지 검사한다 ->
-		* to_string 메소드 리턴형이 std::string인지 검사한다. */
-		enum { value = get_to_string_ret_type<T, sizeof(test<T>(0)) == sizeof(yes) >::value };
-	};
+    public:
+        /* to_string 메소드가 있는지 검사한다 ->
+        * to_string 메소드 리턴형이 std::string인지 검사한다. */
+        enum { value = get_to_string_ret_type<T, sizeof(test<T>(0)) == sizeof(yes) >::value };
+    };
 
 
-	template <typename T>
-	struct has_string_converter {
-		enum { value = has_to_string<T>::value || embed_convertible<T>::value };
-	};
+    template <typename T>
+    struct has_string_converter {
+        enum { value = has_to_string<T>::value || embed_convertible<T>::value };
+    };
 
-	/* TODO : 조건 정리 */
+    /* TODO : 조건 정리 */
 
-	/* to_string메소드가 있는 경우 */
-	template <typename T>
-	typename std::enable_if<
-		has_to_string<T>::value,
-		std::string>::type
-		_string(const T &o) noexcept {
-		return o.to_string();
-	}
+    /* to_string메소드가 있는 경우 */
+    template <typename T>
+    typename std::enable_if<
+        has_to_string<T>::value,
+        std::string>::type
+        _string(const T &o) noexcept {
+        return o.to_string();
+    }
 
-	/* to_string이 없지만, 기본형 타입 변환이 가능한 경우 */
-	template <typename T>
-	typename std::enable_if<
-		(!has_to_string<T>::value) &&
-		embed_convertible<T>::value &&
-		(!is_initializer_list<T>::value),
-		std::string>::type
-		_string(const T &o) noexcept {
-		return embed_cvts::cvt<T>::to_string(o);
-	}
-	template <typename T>
-	typename std::enable_if<
-		(!has_to_string<T>::value) &&
-		embed_convertible<T>::value &&
-		(!is_initializer_list<T>::value),
-		std::string>::type
-		_string(T &o) noexcept {
-		return embed_cvts::cvt<T>::to_string(o);
-	}
+    /* to_string이 없지만, 기본형 타입 변환이 가능한 경우 */
+    template <typename T>
+    typename std::enable_if<
+        (!has_to_string<T>::value) &&
+        embed_convertible<T>::value &&
+        (!is_initializer_list<T>::value),
+        std::string>::type
+        _string(const T &o) noexcept {
+        return embed_cvts::cvt<T>::to_string(o);
+    }
+    template <typename T>
+    typename std::enable_if<
+        (!has_to_string<T>::value) &&
+        embed_convertible<T>::value &&
+        (!is_initializer_list<T>::value),
+        std::string>::type
+        _string(T &o) noexcept {
+        return embed_cvts::cvt<T>::to_string(o);
+    }
 
-	/* 배열 */
-	template <typename T, size_t LEN>
-	typename std::enable_if<
-		(!has_to_string<T>::value) &&
-		embed_convertible<T>::value &&
-		(!is_initializer_list<T>::value),
-		std::string>::type
-		_string(T(&o)[LEN]) noexcept {
+    /* 배열 */
+    template <typename T, size_t LEN>
+    typename std::enable_if<
+        (!has_to_string<T>::value) &&
+        embed_convertible<T>::value &&
+        (!is_initializer_list<T>::value),
+        std::string>::type
+        _string(T(&o)[LEN]) noexcept {
 
-		return embed_cvts::cvt<T[LEN]>::to_string(o);
-	}
+        return embed_cvts::cvt<T[LEN]>::to_string(o);
+    }
 
-	/* std::initializer_list인 경우 */
-	template <typename T>
-	typename std::enable_if<
-		(!has_to_string<std::initializer_list<T>>::value) &&
-		embed_convertible<std::initializer_list<T>>::value,
-		std::string>::type
-		_string(const std::initializer_list<T> &o) noexcept {
-		return embed_cvts::cvt<std::initializer_list<T>>::to_string(o);
-	}
+    /* std::initializer_list인 경우 */
+    template <typename T>
+    typename std::enable_if<
+        (!has_to_string<std::initializer_list<T>>::value) &&
+        embed_convertible<std::initializer_list<T>>::value,
+        std::string>::type
+        _string(const std::initializer_list<T> &o) noexcept {
+        return embed_cvts::cvt<std::initializer_list<T>>::to_string(o);
+    }
 
-	/* to_string이 없고, 기본형 타입도 아닌 경우 */
-	template <typename T>
-	typename std::enable_if<
-		(!has_to_string<T>::value) &&
-		(!embed_convertible<T>::value) &&
-		(!std::is_pointer<T>::value && !std::is_same<std::nullptr_t, T>::value),
-		std::string>::type
-		_string(const T &o) noexcept {
-		char tmp[512];
-		sprintf_s(tmp, "#<%s %p>", typeid(T).name(), &o);
-		return tmp;
-	}
+    /* to_string이 없고, 기본형 타입도 아닌 경우 */
+    template <typename T>
+    typename std::enable_if<
+        (!has_to_string<T>::value) &&
+        (!embed_convertible<T>::value) &&
+        (!std::is_pointer<T>::value && !std::is_same<std::nullptr_t, T>::value),
+        std::string>::type
+        _string(const T &o) noexcept {
+        char tmp[512];
+        sprintf_s(tmp, "#<%s %p>", typeid(T).name(), &o);
+        return tmp;
+    }
 
-	/* 포인터 타입인 경우 */
-	template <typename T>
-	typename std::enable_if<   
-		(!has_to_string<T>::value) &&
-		(!embed_convertible<T>::value) &&
-		(std::is_pointer<T>::value || std::is_same<std::nullptr_t, T>::value) &&
-		(!std::is_same<T, char*>::value),
-		std::string>::type
-		_string(T o) noexcept {
-		char tmp[512];
-		sprintf_s(tmp, "#<%s %p>", typeid(T).name(), o);
-		return tmp;
-	}
+    /* 포인터 타입인 경우 */
+    template <typename T>
+    typename std::enable_if<   
+        (!has_to_string<T>::value) &&
+        (!embed_convertible<T>::value) &&
+        (std::is_pointer<T>::value || std::is_same<std::nullptr_t, T>::value) &&
+        (!std::is_same<T, char*>::value),
+        std::string>::type
+        _string(T o) noexcept {
+        char tmp[512];
+        sprintf_s(tmp, "#<%s %p>", typeid(T).name(), o);
+        return tmp;
+    }
 }
