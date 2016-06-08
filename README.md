@@ -83,22 +83,49 @@ to::_string
   
   std::cout<< to::_string(f); // #<Foo v:15>
   ```
+  
+  __ToString Generator__<br>
+  ```c++
+class weapon {
+public:
+	CREATE_TO_STRING(damage, level)
+
+	int damage = 123;
+	int level = 1;
+};
+class item {
+public:
+	CREATE_TO_STRING(name, qty)
+
+	std::string name;
+	int qty = 5;
+};
+class player {
+public:
+	CREATE_TO_STRING(hp, weapon, inventory)
+
+	int hp = 100;
+	weapon weapon;
+	std::vector<item> inventory;
+	int a_secret_one = 1234;
+};
+  ```
+  
   사용 가능한 변환이 없을 경우에는 타입 이름과 주소값이 함께 출력됩니다.
   ```c++
   Bar b;
   std::cout<< to::_string(b); // #<Bar 00001234>
   ```
-  __is_string_convertible__<br>
-  사용 가능한 문자열 변환기가 있는지 검사합니다. (어차피 변환기 없어도 to::_string은 동작합니다.) <br> 
-  has_string_converter로 이름 바꾸고 싶다..
+  __has_string_converter__<br>
+  사용 가능한 문자열 변환기가 있는지 검사합니다.
   ```c++
   /* int형은 내장 변환기가 있으므로 true */
-  std::cout<< to::is_string_convertible<int>::value; // true
+  std::cout<< to::has_string_converter<int>::value; // true
   
   /* Foo 클래스는 to_string 메소드를 구현해 커스텀 변환기를 만들었으므로 true */
-  std::cout<< to::is_string_convertible<Foo>::value; // true
+  std::cout<< to::has_string_converter<Foo>::value; // true
   /* Bar 클래스는 구현하지 않았으므로 false */
-  std::cout<< to::is_string_convertible<Bar>::value; // false
+  std::cout<< to::has_string_converter<Bar>::value; // false
   ```
 
 Options
