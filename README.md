@@ -85,6 +85,7 @@ to::_string
   ```
   
   __ToString Generator__<br>
+  `CREATE_TO_STRING()` 매크로를 사용하면 클래스에 대한 문자열 변환기를 자동으로 생성합니다.
   ```c++
 class weapon {
 public:
@@ -110,7 +111,20 @@ public:
 	int a_secret_one = 1234;
 };
   ```
-  
+  ```c++
+player a;
+item item1, item2;
+item1.name = "SWORD";
+item2.name = "CHICKEN";
+a.inventory.push_back(item1);
+a.inventory.push_back(item2);
+printf("%s\n", a.to_string().c_str());
+  ```
+  출력 결과물
+  ```
+#<class player  inventory : [#<class item  qty : 5, name : SWORD>, #<class item  qty : 5, name : CHICKEN>],  weapon : #<class weapon  level : 1, damage : 123>, hp : 100>
+  ```
+  <br>
   사용 가능한 변환이 없을 경우에는 타입 이름과 주소값이 함께 출력됩니다.
   ```c++
   Bar b;
