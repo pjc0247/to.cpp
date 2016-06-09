@@ -164,5 +164,4 @@ Options
 
 TODO
 ----
-* 스마트 포인터 지원
 * ToString 생성기에 상속 지원
