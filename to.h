@@ -250,11 +250,14 @@ namespace to {
         };
         
         template <typename T>
-		struct cvt<std::shared_ptr<T>> {
-			static std::string to_string(const std::shared_ptr<T> &ptr) {
-				return to::_string(*(ptr.get()));
-			}
-		};
+        struct cvt<std::shared_ptr<T>> {
+	    static std::string to_string(const std::shared_ptr<T> &ptr) {
+	        char fmt[128];
+	        sprintf_s(fmt, "#<shared_ptr use_count: %d data: %s>",
+	            ptr.use_count(), to::_string(*(ptr.get())).c_str());
+	        return fmt;
+	    }
+        };
     };
 
     template <typename T>
