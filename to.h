@@ -13,6 +13,7 @@
 #include <unordered_map>
 #include <sstream>
 #include <tuple>
+#include <memory>
 
 #if __cplusplus > 199711L || _MSC_VER >= 1900
 #define HAS_NOEXCEPT
