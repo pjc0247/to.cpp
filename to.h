@@ -247,6 +247,13 @@ namespace to {
                 return std::string(n);
             }
         };
+        
+        template <typename T>
+		struct cvt<std::shared_ptr<T>> {
+			static std::string to_string(const std::shared_ptr<T> &ptr) {
+				return to::_string(*(ptr.get()));
+			}
+		};
     };
 
     template <typename T>
