@@ -279,11 +279,11 @@ namespace to {
     struct has_to_string {
     private:
         template <typename T, bool A>
-        struct get_to_string_ret_type {
+        struct check_to_string {
             enum { value = false };
         };
         template <typename T>
-        struct get_to_string_ret_type<T, true> {
+        struct check_to_string<T, true> {
             enum { value = std::is_same<std::string, decltype(((T*)nullptr)->to_string()) >::value };
         };
 
@@ -296,7 +296,7 @@ namespace to {
     public:
         /* to_string 메소드가 있는지 검사한다 ->
         * to_string 메소드 리턴형이 std::string인지 검사한다. */
-        enum { value = get_to_string_ret_type<T, sizeof(test<T>(0)) == sizeof(yes) >::value };
+        enum { value = check_to_string<T, sizeof(test<T>(0)) == sizeof(yes) >::value };
     };
 
 
