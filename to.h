@@ -92,6 +92,8 @@ namespace to {
 
 // TO::_TYPES
 namespace to {
+#pragma warning (push)
+#pragma warning (disable : 4290)
     int _int(const std::string &v) throw(std::out_of_range, std::invalid_argument) {
         return stoi(v);
     }
@@ -107,6 +109,7 @@ namespace to {
     unsigned long _unsigned_long(const std::string &v) throw(std::out_of_range, std::invalid_argument) {
         return std::stoul(v);
     }
+#pragma warning (pop)
 };
 
 // TO::_STRING
