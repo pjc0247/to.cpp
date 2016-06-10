@@ -26,18 +26,30 @@
         auto raw_values = std::make_tuple(__VA_ARGS__); \
         constexpr size_t tuple_size = std::tuple_size<decltype(raw_values)>::value; \
         auto values = to::value_builder<tuple_size>::build(raw_values); \
-        std::string r = "#<" + std::string(typeid(*this).name()) + " "; \
-        for (int i = 0;i < tuple_size; i++){ \
-            auto key = to::nth_token(i, #__VA_ARGS__); \
-            if(key == "") break; \
-            r += key + " : " + to::_string(values[tuple_size - i - 1]) + ", "; \
-        }\
-        r.pop_back(); r.pop_back(); \
-        return r + ">"; \
+        char keys[] = #__VA_ARGS__; \
+        return \
+            "#<" + std::string(typeid(*this).name()) + " " + \
+            to::tostring_builder<tuple_size - 1, sizeof(keys)>::build(keys, values) + \
+            ">";\
     }
 
 // TO::INTERNAL
 namespace to {
+    template <size_t I, size_t SIZE>
+    struct tostring_builder {
+        static std::string build(const char (&keys)[SIZE], const std::vector<std::string> &values) {
+            return 
+                tostring_builder<I - 1, SIZE>::build(keys, values) + ", " +
+                to::nth_token(I, keys) + " : " + values[values.size() - I - 1];
+        }
+    };
+    template <size_t SIZE>
+    struct tostring_builder<0, SIZE> {
+        static std::string build(const char (&keys)[SIZE], const std::vector<std::string> &values) {
+            return to::nth_token(0, keys) + " : " + values[values.size()-1];
+        }
+    };
+    
     template <size_t I>
     struct value_builder {
         template <class... TARGS, class... ARGS>
@@ -254,12 +266,12 @@ namespace to {
         
         template <typename T>
         struct cvt<std::shared_ptr<T>> {
-	    static std::string to_string(const std::shared_ptr<T> &ptr) {
-	        char fmt[128];
-	        sprintf_s(fmt, "#<shared_ptr use_count: %d data: ",
-	            ptr.use_count());
-	        return fmt + to::_string(*(ptr.get())) + ">";
-	    }
+        static std::string to_string(const std::shared_ptr<T> &ptr) {
+            char fmt[128];
+            sprintf_s(fmt, "#<shared_ptr use_count: %d data: ",
+                ptr.use_count());
+            return fmt + to::_string(*(ptr.get())) + ">";
+        }
         };
     };
 
