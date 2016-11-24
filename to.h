@@ -35,6 +35,7 @@
 
 // TO::INTERNAL
 namespace to {
+
     template <size_t I, size_t SIZE>
     struct tostring_builder {
         static std::string build(const char (&keys)[SIZE], const std::vector<std::string> &values) {
@@ -49,11 +50,11 @@ namespace to {
             return to::nth_token(0, keys) + " : " + values[values.size()-1];
         }
     };
-    
+
     template <size_t I>
     struct value_builder {
         template <class... TARGS, class... ARGS>
-        static std::vector<std::string> build(const std::tuple<TARGS...> &targ, ARGS&&... args) {
+        static std::vector<std::string> build(const std::tuple<TARGS...>& targ, ARGS&&... args) {
             auto vec = value_builder<I - 1>::build(targ, std::get<I - 1>(targ), std::forward<ARGS>(args)...);
             vec.push_back(to::_string(std::get<I - 1>(targ)).c_str());
             return vec;
@@ -62,7 +63,7 @@ namespace to {
     template <>
     struct value_builder<0> {
         template <class... TARGS, class... ARGS>
-        static std::vector<std::string> build(const std::tuple<TARGS...> &targ, ARGS&&... args) {
+        static std::vector<std::string> build(const std::tuple<TARGS...>& targ, ARGS&&... args) {
             return std::vector<std::string>();
         }
     };
@@ -263,15 +264,15 @@ namespace to {
                 return std::string(n);
             }
         };
-        
+
         template <typename T>
         struct cvt<std::shared_ptr<T>> {
-        static std::string to_string(const std::shared_ptr<T> &ptr) {
-            char fmt[128];
-            sprintf_s(fmt, "#<shared_ptr use_count: %d data: ",
-                ptr.use_count());
-            return fmt + to::_string(*(ptr.get())) + ">";
-        }
+            static std::string to_string(const std::shared_ptr<T> &ptr) {
+                char fmt[128];
+                sprintf_s(fmt, "#<shared_ptr use_count: %d data: ",
+                    ptr.use_count());
+                return fmt + to::_string(*(ptr.get())) + ">";
+            }
         };
     };
 
@@ -311,7 +312,6 @@ namespace to {
         enum { value = is_ret_string<T, sizeof(test<T>(0)) == sizeof(yes) >::value };
     };
 
-
     template <typename T>
     struct has_string_converter {
         enum { value = has_to_string<T>::value || embed_convertible<T>::value };
@@ -319,12 +319,14 @@ namespace to {
 
     /* TODO : 조건 정리 */
 
+#define TO_INTERNAL_PARAM const char *unused = nullptr
+
     /* to_string메소드가 있는 경우 */
     template <typename T>
     typename std::enable_if<
         has_to_string<T>::value,
         std::string>::type
-        _string(const T &o) noexcept {
+        _string(const T &o, TO_INTERNAL_PARAM) noexcept {
         return o.to_string();
     }
 
@@ -335,7 +337,7 @@ namespace to {
         embed_convertible<T>::value &&
         (!is_initializer_list<T>::value),
         std::string>::type
-        _string(const T &o) noexcept {
+        _string(const T &o, TO_INTERNAL_PARAM) noexcept {
         return embed_cvts::cvt<T>::to_string(o);
     }
     template <typename T>
@@ -344,7 +346,7 @@ namespace to {
         embed_convertible<T>::value &&
         (!is_initializer_list<T>::value),
         std::string>::type
-        _string(T &o) noexcept {
+        _string(T &o, TO_INTERNAL_PARAM) noexcept {
         return embed_cvts::cvt<T>::to_string(o);
     }
 
@@ -355,7 +357,7 @@ namespace to {
         embed_convertible<T>::value &&
         (!is_initializer_list<T>::value),
         std::string>::type
-        _string(T(&o)[LEN]) noexcept {
+        _string(T(&o)[LEN], TO_INTERNAL_PARAM) noexcept {
 
         return embed_cvts::cvt<T[LEN]>::to_string(o);
     }
@@ -366,7 +368,7 @@ namespace to {
         (!has_to_string<std::initializer_list<T>>::value) &&
         embed_convertible<std::initializer_list<T>>::value,
         std::string>::type
-        _string(const std::initializer_list<T> &o) noexcept {
+        _string(const std::initializer_list<T> &o, TO_INTERNAL_PARAM) noexcept {
         return embed_cvts::cvt<std::initializer_list<T>>::to_string(o);
     }
 
@@ -375,7 +377,10 @@ namespace to {
     typename std::enable_if<
         std::is_enum<T>::value,
         std::string>::type
-        _string(const T o) noexcept {
+        _string(const T o, const char *name) noexcept {
+
+		if (name != nullptr)
+			return std::string(name);
 
         char tmp[512];
         sprintf_s(tmp, "#<%s %d>", typeid(T).name(), o);
@@ -390,7 +395,7 @@ namespace to {
         (!std::is_enum<T>::value) && 
         (!std::is_pointer<T>::value && !std::is_same<std::nullptr_t, T>::value),
         std::string>::type
-        _string(const T &o) noexcept {
+        _string(const T &o, TO_INTERNAL_PARAM) noexcept {
         char tmp[512];
         sprintf_s(tmp, "#<%s %p>", typeid(T).name(), &o);
         return tmp;
@@ -404,28 +409,11 @@ namespace to {
         (std::is_pointer<T>::value || std::is_same<std::nullptr_t, T>::value) &&
         (!std::is_same<T, char*>::value),
         std::string>::type
-        _string(T o) noexcept {
+        _string(T o, TO_INTERNAL_PARAM) noexcept {
         char tmp[512];
         sprintf_s(tmp, "#<%s %p>", typeid(T).name(), o);
         return tmp;
     }
-    
-    template <typename T>
-    typename std::enable_if<
-        std::is_enum<T>::value,
-        std::string>::type
-        _string_internal(const T o, const char *name) noexcept {
-
-        return std::string(name);
-    }
-    template <typename T>
-    typename std::enable_if<
-        (!std::is_enum<T>::value),
-        std::string>::type
-        _string_internal(T &&o, const char *name) noexcept {
-
-        return to::_string<T>(o);
-    }
 }
 
-#define TO_S(x) to::_string_internal(x, #x)
+#define to_s(x) to::_string(x, #x)
