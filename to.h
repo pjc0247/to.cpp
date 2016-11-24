@@ -379,8 +379,10 @@ namespace to {
         std::string>::type
         _string(const T o, const char *name) noexcept {
 
-		if (name != nullptr)
-			return std::string(name);
+        if (name != nullptr) {
+            auto name_str = std::string(name);
+            return name_str.substr(name_str.find_last_of(':') + 1);
+        }
 
         char tmp[512];
         sprintf_s(tmp, "#<%s %d>", typeid(T).name(), o);
