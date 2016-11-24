@@ -44,6 +44,16 @@ TEST_CASE("to::_string", "to::_string") {
         REQUIRE(to::_string(str_ptr) == "HelloWorld_2");
     }
 
+    enum Enum {
+        A =0 , B =1, C =2
+    };
+
+    SECTION("enum 변환") {
+        REQUIRE(to_s(Enum::A) == "Enum::A");
+        REQUIRE(to_s(Enum::B) == "Enum::B");
+        REQUIRE(to_s(Enum::C) == "Enum::C");
+    }
+    
     SECTION("STL Container 변환") {
         REQUIRE(to::_string({ 1,2,3,4 }) == "[1, 2, 3, 4]");
 
