@@ -371,30 +371,30 @@ namespace to {
     }
 
     /* enum */
-	template <typename T>
-	typename std::enable_if<
-		std::is_enum<T>::value,
-		std::string>::type
-		_string(const T o) noexcept {
+    template <typename T>
+    typename std::enable_if<
+        std::is_enum<T>::value,
+        std::string>::type
+        _string(const T o) noexcept {
 
-		char tmp[512];
-		sprintf_s(tmp, "#<%s %d>", typeid(T).name(), o);
-		return tmp;
-	}
+        char tmp[512];
+        sprintf_s(tmp, "#<%s %d>", typeid(T).name(), o);
+        return tmp;
+    }
 
-	/* to_string이 없고, 기본형 타입도 아닌 경우 */
-	template <typename T>
-	typename std::enable_if<
-		(!has_to_string<T>::value) &&
-		(!embed_convertible<T>::value) &&
-		(!std::is_enum<T>::value) && 
-		(!std::is_pointer<T>::value && !std::is_same<std::nullptr_t, T>::value),
-		std::string>::type
-		_string(const T &o) noexcept {
-		char tmp[512];
-		sprintf_s(tmp, "#<%s %p>", typeid(T).name(), &o);
-		return tmp;
-	}
+    /* to_string이 없고, 기본형 타입도 아닌 경우 */
+    template <typename T>
+    typename std::enable_if<
+        (!has_to_string<T>::value) &&
+        (!embed_convertible<T>::value) &&
+        (!std::is_enum<T>::value) && 
+        (!std::is_pointer<T>::value && !std::is_same<std::nullptr_t, T>::value),
+        std::string>::type
+        _string(const T &o) noexcept {
+        char tmp[512];
+        sprintf_s(tmp, "#<%s %p>", typeid(T).name(), &o);
+        return tmp;
+    }
 
     /* 포인터 타입인 경우 */
     template <typename T>
@@ -411,21 +411,21 @@ namespace to {
     }
     
     template <typename T>
-	typename std::enable_if<
-		std::is_enum<T>::value,
-		std::string>::type
-		_string_internal(const T o, const char *name) noexcept {
+    typename std::enable_if<
+        std::is_enum<T>::value,
+        std::string>::type
+        _string_internal(const T o, const char *name) noexcept {
 
-		return std::string(name);
-	}
-	template <typename T>
-	typename std::enable_if<
-		(!std::is_enum<T>::value),
-		std::string>::type
-		_string_internal(T &&o, const char *name) noexcept {
+        return std::string(name);
+    }
+    template <typename T>
+    typename std::enable_if<
+        (!std::is_enum<T>::value),
+        std::string>::type
+        _string_internal(T &&o, const char *name) noexcept {
 
-		return to::_string<T>(o);
-	}
+        return to::_string<T>(o);
+    }
 }
 
 #define TO_S(x) to::_string_internal(x, #x)
