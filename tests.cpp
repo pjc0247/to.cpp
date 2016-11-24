@@ -49,9 +49,9 @@ TEST_CASE("to::_string", "to::_string") {
     };
 
     SECTION("enum 변환") {
-        REQUIRE(to_s(Enum::A) == "Enum::A");
-        REQUIRE(to_s(Enum::B) == "Enum::B");
-        REQUIRE(to_s(Enum::C) == "Enum::C");
+        REQUIRE(to_s(Enum::A) == "A");
+        REQUIRE(to_s(Enum::B) == "B");
+        REQUIRE(to_s(Enum::C) == "C");
     }
     
     SECTION("STL Container 변환") {
