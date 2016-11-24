@@ -416,6 +416,14 @@ namespace to {
         sprintf_s(tmp, "#<%s %p>", typeid(T).name(), o);
         return tmp;
     }
+    
+    std::string _nameof_internal(const std::string &name) {
+        auto idx = std::find_if(name.rbegin(), name.rend(), [](char x) {
+            return x == ':' || x == '.';
+        });
+		
+        return std::string(idx.base(), name.end());
+    }
 }
 
-#define to_s(x) to::_string(x, #x)
+#define nameof(x) to::_nameof_internal(#x)
