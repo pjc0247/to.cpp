@@ -136,9 +136,8 @@ namespace to {
         enum { value = true };
     };
 
-    class embed_cvts {
-    public:
-
+    namespace embed_cvts {
+    
         template <typename T>//, typename C = char>//, template <typename T, typename = std::allocator<T>> class C>
         struct cvt {
             /* nothing -> deduction failure */
