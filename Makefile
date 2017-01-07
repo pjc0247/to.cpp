@@ -1,5 +1,5 @@
 build :
-	gcc tests.cpp -o tests -std=c++0x
+	cc tests.cpp -o tests
   
 test : build
 	./tests
