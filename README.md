@@ -1,7 +1,7 @@
 to.cpp
 ====
 
-<img src="to.png" width="600" />
+<img src="to.png" width="400" />
 
 c++용 타입간 형변환 기능 제공
 
