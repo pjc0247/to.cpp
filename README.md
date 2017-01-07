@@ -20,8 +20,7 @@ to::_types
 to::_string
 ----
 
-  __Fundamental types__<br>
-  C++ 기본 타입들에는 내장 변환기가 사용됩니다.
+  __Fundamental types__
   ```c++
   int v = 1234;
   std::cout<< to::_string(v); // 1234
@@ -40,8 +39,7 @@ to::_string
   char *s = "hello world";
   std::cout<< to::_string(s); // hello world
   ```
-  __STL Containers__<br>
-  STL 컨테이너들에는 내장 변환기가 사용됩니다.
+  __STL Containers__
   ```c++
   std::vector<int> v({1,2,3,4});
   std::cout<< to::_string(v); // [1, 2, 3, 4]
@@ -66,7 +64,7 @@ to::_string
   std::cout<< to::_string(l); // [[1, 2], [3, 4]]
   ```
   __Custom Classes__<br>
-  직접 만든 클래스에 to_string 메소드를 구현하여 클래스에 대한 커스텀 문자열 변환기를 만들 수 있습니다.
+  You can make a custom string converter for your class by implementing the `to_string` method.
   ```c++
   class Foo{
   public:
@@ -85,7 +83,7 @@ to::_string
   ```
   
   __ToString Generator__<br>
-  `CREATE_TO_STRING()` 매크로를 사용하면 클래스에 대한 문자열 변환기를 자동으로 생성합니다.
+  It also have a convenient macro which auto-implements `to_string` method.
   ```c++
 class weapon {
 public:
@@ -130,13 +128,13 @@ printf("%s\n", a.to_string().c_str());
   hp : 100>
   ```
   <br>
-  사용 가능한 변환이 없을 경우에는 타입 이름과 주소값이 함께 출력됩니다.
+  If no conversion is available, type name and address value will be returned.
   ```c++
   Bar b;
-  std::cout<< to::_string(b); // #<Bar 00001234>
+  std::cout<< to::_string(b); // #<Bar 0x00001234>
   ```
   __has_string_converter__<br>
-  사용 가능한 문자열 변환기가 있는지 검사합니다.
+  Checks whether there is a suitable available string converters or not.
   ```c++
   /* int형은 내장 변환기가 있으므로 true */
   std::cout<< to::has_string_converter<int>::value; // true
