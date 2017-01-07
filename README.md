@@ -1,9 +1,9 @@
 to.cpp
 ====
 
-<img src="to.png" width="400" />
+<img src="to.png" width="450" />
 
-c++용 타입간 형변환 기능 제공
+__brings type conversion features in modern C++.__
 
 to::_types
 ----
