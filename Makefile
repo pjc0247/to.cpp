@@ -1,5 +1,5 @@
 build :
-	cc tests.cpp -o tests
+	clang tests.cpp -o tests
   
 test : build
 	./tests
