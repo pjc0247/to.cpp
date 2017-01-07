@@ -36,38 +36,6 @@
 // TO::INTERNAL
 namespace to {
 
-    template <size_t I, size_t SIZE>
-    struct tostring_builder {
-        static std::string build(const char (&keys)[SIZE], const std::vector<std::string> &values) {
-            return 
-                tostring_builder<I - 1, SIZE>::build(keys, values) + ", " +
-                to::nth_token(I, keys) + " : " + values[values.size() - I - 1];
-        }
-    };
-    template <size_t SIZE>
-    struct tostring_builder<0, SIZE> {
-        static std::string build(const char (&keys)[SIZE], const std::vector<std::string> &values) {
-            return to::nth_token(0, keys) + " : " + values[values.size()-1];
-        }
-    };
-
-    template <size_t I>
-    struct value_builder {
-        template <class... TARGS, class... ARGS>
-        static std::vector<std::string> build(const std::tuple<TARGS...> &targ, ARGS&&... args) {
-            auto vec = value_builder<I - 1>::build(targ, std::get<I - 1>(targ), std::forward<ARGS>(args)...);
-            vec.push_back(to::_string(std::get<I - 1>(targ)).c_str());
-            return vec;
-        }
-    };
-    template <>
-    struct value_builder<0> {
-        template <class... TARGS, class... ARGS>
-        static std::vector<std::string> build(const std::tuple<TARGS...> &targ, ARGS&&... args) {
-            return std::vector<std::string>();
-        }
-    };
-
     constexpr unsigned short _make_16(unsigned char a, unsigned char b) {
         return ((unsigned short)((a & 0xff) | ((b & 0xff) << 8)));
     }
@@ -101,6 +69,38 @@ namespace to {
         int ret = tokenizer<SIZE - 2, SIZE - 2>::find(target, a);
         return std::string(a + _lo_8(ret), _hi_8(ret));
     }
+    
+    template <size_t I, size_t SIZE>
+    struct tostring_builder {
+        static std::string build(const char (&keys)[SIZE], const std::vector<std::string> &values) {
+            return 
+                tostring_builder<I - 1, SIZE>::build(keys, values) + ", " +
+                to::nth_token(I, keys) + " : " + values[values.size() - I - 1];
+        }
+    };
+    template <size_t SIZE>
+    struct tostring_builder<0, SIZE> {
+        static std::string build(const char (&keys)[SIZE], const std::vector<std::string> &values) {
+            return to::nth_token(0, keys) + " : " + values[values.size()-1];
+        }
+    };
+
+    template <size_t I>
+    struct value_builder {
+        template <class... TARGS, class... ARGS>
+        static std::vector<std::string> build(const std::tuple<TARGS...> &targ, ARGS&&... args) {
+            auto vec = value_builder<I - 1>::build(targ, std::get<I - 1>(targ), std::forward<ARGS>(args)...);
+            vec.push_back(to::_string(std::get<I - 1>(targ)).c_str());
+            return vec;
+        }
+    };
+    template <>
+    struct value_builder<0> {
+        template <class... TARGS, class... ARGS>
+        static std::vector<std::string> build(const std::tuple<TARGS...> &targ, ARGS&&... args) {
+            return std::vector<std::string>();
+        }
+    };
 }
 
 // TO::_TYPES
