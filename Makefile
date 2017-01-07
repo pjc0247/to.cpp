@@ -1,5 +1,5 @@
 build :
-  gcc test.cpp -o test
+	gcc test.cpp -o test
   
 test : build
-  ./test
+	./test
