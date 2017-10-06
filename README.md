@@ -84,6 +84,7 @@ to::_string
   
   __ToString Generator__<br>
   It also have a convenient macro which auto-implements `to_string` method.
+  
   ```c++
 class weapon {
 public:
@@ -94,7 +95,8 @@ public:
 };
 class item {
 public:
-	CREATE_TO_STRING(name, qty)
+
+CREATE_TO_STRING(name, qty)
 
 	std::string name;
 	int qty = 5;
@@ -129,12 +131,15 @@ printf("%s\n", a.to_string().c_str());
   ```
   <br>
   If no conversion is available, type name and address value will be returned.
+  
   ```c++
   Bar b;
   std::cout<< to::_string(b); // #<Bar 0x00001234>
   ```
+  
   __has_string_converter__<br>
   Checks whether there is a suitable available string converters or not.
+  
   ```c++
   /* int형은 내장 변환기가 있으므로 true */
   std::cout<< to::has_string_converter<int>::value; // true
