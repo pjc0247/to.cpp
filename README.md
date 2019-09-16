@@ -29,13 +29,14 @@ to::_string
   bool b = true;
   std::cout<< to::_string(b); // true
   
-  // 포인터는 타입 이름 + 주소값으로 변환됩니다.
+  // Pointers will be converted to `Typename + Address`.
   int *ptr = &v;
   std::cout<< to::_string(v); // #<int * 0000abcd>
   
   std::cout<< to::_string(nullptr); // #<std::nullptr_t 00000000>
   
-  // char *, const char *, char [], const char[] 타입은 포인터로 취급되지 않고 문자열로 취급됩니다.
+  // char *, const char *, char [], const char[]
+  //   types will be treated as 'String' instead of 'Pointer'.
   char *s = "hello world";
   std::cout<< to::_string(s); // hello world
   ```
