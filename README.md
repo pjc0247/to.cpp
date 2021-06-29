@@ -32,10 +32,11 @@ to::_string
   ```
   
   ```c++
-  // Pointers will be converted to `Typename + Address`.
+  // Pointers will be converted into `Typename + Address`.
   int *ptr = &v;
   std::cout<< to::_string(v); // #<int * 0000abcd>
   
+  // nullptr
   std::cout<< to::_string(nullptr); // #<std::nullptr_t 00000000>
   ```
   
