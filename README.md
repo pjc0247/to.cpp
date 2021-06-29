@@ -42,20 +42,31 @@ to::_string
   std::cout<< to::_string(s); // hello world
   ```
   __STL Containers__
+  
+  vector
   ```c++
   std::vector<int> v({1,2,3,4});
   std::cout<< to::_string(v); // [1, 2, 3, 4]
+  ```
   
+  map
+  ```c++
   std::map<std::string, std::string> m({
     {"name", "park"},
     {"chicken", "good"}});
   std::cout<< to::_string(m); // {name : park, chicken : good}
-  
+  ```
+
+  map + vector
+  ```c++
   std::map<std::string, std::vector<std::string>> m2({
     {"fruits", {"apple", "banana", "orange"}},
   	{"colors", {"yellow", "red", "blue"}}});
   std::cout<< to::_string(m2); // {fruits : [apple, banana, orange], colors : [yellow, red, blue]}
+  ```
   
+  misc
+  ```c++
   std::string str = "hello world";
   std::cout<< to::_string(str); // hello world
   
