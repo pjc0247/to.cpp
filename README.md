@@ -21,7 +21,7 @@ to::_types
 to::_string
 ----
 
-  __Fundamental types__
+  __Primitive types__
   ```c++
   int v = 1234;
   std::cout<< to::_string(v); // 1234
@@ -29,13 +29,17 @@ to::_string
   
   bool b = true;
   std::cout<< to::_string(b); // true
+  ```
   
+  ```c++
   // Pointers will be converted to `Typename + Address`.
   int *ptr = &v;
   std::cout<< to::_string(v); // #<int * 0000abcd>
   
   std::cout<< to::_string(nullptr); // #<std::nullptr_t 00000000>
+  ```
   
+  ```c++
   // char *, const char *, char [], const char[]
   //   types will be treated as 'String' instead of 'Pointer'.
   char *s = "hello world";
